@@ -1,0 +1,40 @@
+Extract WAV from MKV:
+
+vlc -I dummy --no-sout-video --sout-audio --no-sout-rtp-sap --no-sout-standard-sap --ttl=1 --sout-keep --sout "#transcode{acodec=s16l,channels=2}:std{access=file,mux=wav,dst=rheingold_vlc.wav}" RING_Das_Rheingold_t01.mkv vlc://quit
+
+I use VLC to extract the audio because this seems to yield better sound quality for some reason. If I extract the WAV with ffmpeg, I get a lot of distortion in the louder places. 
+
+
+
+Extract chapters from MKV:
+
+mkvextract chapters RING_Das_Rheingold_t01.mkv > rheingold.chapters.xml
+
+
+
+Extract chapter from WAV
+
+ffmpeg -i rheingold_vlc.wav -ss 00:02:11.331200000 -t 00:06:13.373000000 -acodec copy rheingold01.wav
+Possibly use avconv instead of ffmpeg
+
+
+
+I have installed these extra Haskell packages (Data.List.Split, MTL):
+
+sudo apt-get install libghc-split-dev
+sudo apt-get install libghc-mtl-dev
+sudo apt-get install libghc-missingh-dev
+
+
+
+
+To parse the XML chapters I COULD use Haskell XML Toolbox:
+http://hackage.haskell.org/package/hxt
+
+
+
+As Haskell guide I use "Learn you a Haskell": 
+http://learnyouahaskell.com/modules
+
+
+
