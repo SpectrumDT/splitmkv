@@ -8,19 +8,8 @@ var SplitMKV = {
   },
   
   setListListeners: function () {
-    var tagNames = ['ol','ul'];
-    var k, j, i, es, es1;
-    var addListeners = function (element){
-            element.addEventListener('mouseover', function () {element.style.fontStyle = 'italic';});
-            element.addEventListener('mouseout', function () {element.style.fontStyle = 'normal';});
-          };
-    for (k = 0; k < tagNames.length; k+= 1){
-      es = document.getElementsByTagName(tagNames[k]);
-      for (j = 0; j < es.length; j+= 1){
-        SplitMKV.iterator.prototype.applyListeners = function(){this.apply(addListeners);};
-        new SplitMKV.iterator(es[j].childNodes).applyListeners();
-      }
-    }
+      $("li").on("mouseover", function () {this.style.fontStyle = 'italic';});
+      $("li").on("mouseout", function () {this.style.fontStyle = 'normal';});
   },
   
   getSavedTexts: function () {    
@@ -127,16 +116,6 @@ var SplitMKV = {
       }
     }
     return null;
-  },
-  
-  iterator: function(elements){
-    this.elements = elements;
-    this.apply = function(f){
-      var i;
-      for (i = 0; i < elements.length; i+= 1){
-        f(elements[i]);
-      }
-    }    
   }
 };
 
