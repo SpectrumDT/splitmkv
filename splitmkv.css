@@ -1,0 +1,51 @@
+h1 {
+  color:purple}
+h2 {
+  color:blue;
+  border:1px solid blue;
+  margin:10px;
+  padding:5px;
+}
+body {
+  background-color:ivory;
+}
+img {
+  width:100%;
+}
+table, th, td {
+  border:1px solid purple;
+  border-collapse:collapse;
+}
+table tr:nth-child(odd){
+  background-color:lightgray;
+}
+th{
+  background-color:thistle;
+}
+th, td {
+  padding:5px
+}
+caption {
+  font-weight:bold
+}
+ul{
+  list-style-type:circle
+}
+header{
+  overflow:hidden;
+}
+footer{
+  width:100%;
+  bottom:0;
+  position:absolute;
+}
+section{
+  float:left;
+  width:30%
+}
+section.howto{
+}
+section.settings{
+}
+section.chapterlist{
+}

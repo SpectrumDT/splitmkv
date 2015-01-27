@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Split MKV</title>
+    <meta 
+      content="text/html; charset=utf-8"
+      http-equiv="Content-Type" />
+    <meta name="author" content="Claus Appel" />
+    <meta name="description" content="Tool to split an MKV file into multiple OGG files" />
+    <meta name="keywords" content="MKV, OGG, DVD, BluRay" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="splitmkv.css" />
+  </head>
+  <body>
+    <header>
+      <img 
+        src="MatroskaLogo.svg"
+        alt="Matroska logo"
+        title="Matroska logo"
+        style="height:100px;width:100px;float:left;margin:10px" />
+      <div style="padding:9px">
+        <h1>Split MKV</h1>
+        <p>Split an MKV file into OGG files. Yay!</p>
+      </div>
+    </header>
+    
+    <hr />
+        
+    <main style="width:100%">
+      <section class="section howto">
+        <h4>
+          This tool lets you:
+        </h4>
+        <div>
+          <ul>
+            <li>Parse an MKV file</li>
+            <li>Inspect the chapters</li>
+            <li>Enter metadata</li>
+            <li>Save metadata to cookie</li>
+            <li>Export all or some chapters to WAV or OGG</li>
+          </ul>
+        </div>
+        <article>
+        <h4>
+          To use it:
+        </h4>
+        <ol>
+          <li>Procure an MKV file (possibly using MakeMKV)</li>
+          <li>Select the MKV</li>
+          <li>Enter metadata</li>
+          <li>Select which chapters you want to extract</li>
+          <li>Press the button 'Extract'</li>
+        </ol>
+        </article>
+        <p>
+          <button id="button_extract" onclick="SplitMKV.extract(this);">Extract</button>
+        </p>  
+      </section>
+      
+        <section class="section settings">    
+          <h4>
+            Input
+          </h4>
+          <p title="Select source file type">Source file type:
+            <select>
+              <option title="Start from an MKV video file">MKV</option>
+              <option title="Start from a WAV file and a chapter XML file">WAV and XML</option>
+            </select>
+          </p>
+          <p title="Select XML file">Select XML file:
+            <input type="file" onchange="SplitMKV.xmlFile_onChange(this);"/>
+          </p>
+          <h4>
+            Metadata
+          </h4>
+          <table>
+            <tr>
+              <td><label for="input_artist">Artist</label></td>
+              <td><input type="text" id="input_artist" onchange="SplitMKV.tag_onChange(this);"></input></td>
+            </tr>
+            <tr>
+              <td><label for="input_album">Album</label></td>
+              <td><input type="text" id="input_album"></input></td>
+            </tr>
+            <tr>
+              <td><label for="input_year">Year</label></td>
+              <td><input type="text" id="input_year"></input></td>
+            </tr>
+          </table>   
+        </section>
+        <section class="section chapterlist">
+          <h4>
+            Chapters
+          </h4>
+          <table id="chapterTable">
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Length</th>
+            </tr>
+            <tr>
+              <td>01</td>
+              <td><input type="text" value="Oink"/></td>
+              <td>1:00</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td><input type="text" value="Boink"/></td>
+              <td>2:30</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td><input type="text" value="Yoink"/></td>
+              <td>1:45</td>
+            </tr>
+          </table>
+        </section>
+    </main>
+    
+    <footer>
+      <hr />
+      <address>
+        <i>
+          By Claus Appel
+          <br/>
+          <a title="Contact me!" href="mailto:spectrumdt@gmail.com">spectrumdt@gmail.com</a>
+        </i>
+      </address>
+    </footer>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="splitmkv.js"></script>
+    <script>
+      $(document).ready(SplitMKV.onLoad);
+    </script>
+  </body>
+</html>
