@@ -24,39 +24,48 @@ var SplitMKV = {
   },
   
   getSavedTexts: function () {    
-    var request = new XMLHttpRequest();
-    var url = "splitmkv.txt";
-    request.onreadystatechange = function(){
-      var data;
-      if (request.readyState == 4) {
-        if (request.status == 200){
-          //data = JSON.parse(request.responseText);
-          alert("Saved texts: \n" + request.responseText);
-        } else {
-          alert(JSON.stringify(request));
+//     var request = new XMLHttpRequest();
+//     var url = "splitmkv.txt";
+//     request.onreadystatechange = function(){
+//       var data;
+//       if (request.readyState == 4) {
+//         if (request.status == 200){
+//           //alert("Saved texts: \n" + request.responseText);
+//           //data = JSON.parse(request.responseText);
+//         } 
+//       }
+//     };
+//     request.open("GET", url, true);
+//     request.send();
+    var inputs, input, i, cookieValue;
+    if (document.cookie){
+      //window.alert(document.cookie);
+      inputs = document.getElementsByTagName("input");
+      for (i = 0; i < inputs.length; i+= 1){
+        input = inputs[i];
+        if (input.id){
+          cookieValue = SplitMKV.getCookie(input.id);
+          if (cookieValue){
+            input.value = cookieValue;
+          }
         }
       }
-    };
-    request.open("GET", url, true);
-    request.send();
-//     var inputs, input, i, cookieValue;
-//     if (document.cookie){
-//       //window.alert(document.cookie);
-//       inputs = document.getElementsByTagName("input");
-//       for (i = 0; i < inputs.length; i+= 1){
-//         input = inputs[i];
-//         if (input.id){
-//           cookieValue = SplitMKV.getCookie(input.id);
-//           if (cookieValue){
-//             input.value = cookieValue;
-//           }
-//         }
-//       }
-//     }
+    }
   },
   
   saveTexts: function (){
-    
+//     var request = new XMLHttpRequest();
+//     var url = "splitmkv.txt";
+//     var payload = JSON.stringify({year: "2010"});
+//     request.onreadystatechange = function(){
+//       if (request.readyState == 4){
+//         alert("Saved these texts:\n" + request.responseText);
+//       }
+//     }
+//     request.open("PUT", url, true);
+//     request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+//     request.setRequestHeader("Content-Length", payload.length);
+//     request.send(payload);
   },
   
   setInputListeners: function () {
