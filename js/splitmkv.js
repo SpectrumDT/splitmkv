@@ -1,92 +1,114 @@
 /*jslint browser:true */
 var SplitMKV = {
-  onLoad: function () {    
-    SplitMKV.setListListeners();
+  onLoad: function () {
+    // Set event listeners. 
+    $("#button_extract").on("click", function(){SplitMKV.extract(this);});
+    $("#input_xmlfile").on("change", function(){SplitMKV.getChaptersFromXml();});
+    $("li").on("mouseover", function () {this.style.fontStyle = 'italic';});
+    $("li").on("mouseout", function () {this.style.fontStyle = 'normal';});
+    $("input").on("change", SplitMKV.setInputCookie);
+    
+    // Make sections slide in.
+    //$("section.slidedown").hide().slideDown("slow");
+    
+    // Load texts from cookies.
     SplitMKV.getSavedTexts();
-    SplitMKV.setInputListeners();
+    
+    // Load chapters from XML, if an XML file is preselected. 
+    SplitMKV.getChaptersFromXml();
   },
   
-  setListListeners: function () {
-      $("li").on("mouseover", function () {this.style.fontStyle = 'italic';});
-      $("li").on("mouseout", function () {this.style.fontStyle = 'normal';});
+  setInputCookie: function(input){    
+    if (this.id){
+      SplitMKV.Cookie.setCookie(this.id, this.value);
+    }
   },
   
   getSavedTexts: function () {    
     var inputs, input, i, cookieValue;
     if (document.cookie){
-      //window.alert(document.cookie);
-      inputs = document.getElementsByTagName("input");
-      for (i = 0; i < inputs.length; i+= 1){
-        input = inputs[i];
-        if (input.id){
-          cookieValue = SplitMKV.getCookie(input.id);
+      $("input[type='text']").each(function(){
+        if (this.id){
+          cookieValue = SplitMKV.Cookie.getCookie(this.id);
           if (cookieValue){
-            input.value = cookieValue;
+            $(this).val(cookieValue);
           }
         }
-      }
+      });
     }
   },
   
-  setInputListeners: function () {
-    var i;
-    var inputs = document.getElementsByTagName("input");
-    var addListener = function (input){
-        if (input.id){
-          input.addEventListener("change", function () {
-            SplitMKV.setCookie(input.id, input.value);
-          });
-        }        
-      };
-    for (i = 0; i < inputs.length; i+= 1){
-      addListener(inputs[i]);
-    }      
+  getChaptersFromXml: function (){
+    var file = SplitMKV.getSelectedXmlFileName();
+    if (file){
+      SplitMKV.readXml(file);
+    }
   },
   
-  xmlFile_onChange: function (input){
+  getSelectedXmlFileName: function(){
     var files;
     // Check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
-      files = input.files; 
+      files = $("#input_xmlfile")[0].files; 
       if (files.length > 0){
-        window.alert("Selected XML file: " + files[0].name);
-      }
-    } else {
-      window.alert('The File APIs are not fully supported in this browser.');
-    }
-  },
-  
-  extract: function (self){
-    var delay = 1000;
-    self.innerHTML = "Extracting...";
-    self.disabled = true;
-    window.setTimeout(function () {
-      self.innerHTML = "Extract";
-      self.disabled = false;      
-    }, delay);
-  },
-  
-  setCookie: function (name, value, expires){
-    if (expires){
-      document.cookie = name + "=" + value + "; expires=" + expires;
-    } else {
-      document.cookie = name + "=" + value;
-    }
-  }, 
-  
-  getCookie: function (name){
-    var i, pair, cookies, cookieString;
-    cookieString = document.cookie;
-    if (cookieString){
-      cookies = cookieString.split(";");
-      for (i = 0; i < cookies.length; i+= 1){
-        pair = cookies[i].split("=");
-        if (pair[0].trim() === name){
-          return pair[1];
-        }
+        return files[0];
       }
     }
     return null;
+  },
+  
+  readXml: function(filePath){
+    var fr;
+    try{
+      fr = new FileReader();
+      fr.onload = function(){SplitMKV.showChapterTable(this.result);};
+      fr.readAsText(filePath);
+    } catch(e) {
+      alert("Could not read file '"+filePath+"'.\n"+e);
+    }
+  },
+  
+  showChapterTable: function(xml){
+    //alert("Received file: \n"+xml); 
+    $("#chapterTable_pleaseSelect").hide();
+    $("#chapterTable").fadeIn(1000);
+  },
+  
+  extract: function (selfDom){
+    var delay = 1000;
+    var self = $(selfDom)
+    var oldText = self.text();
+    self.text("Extracting...").prop('disabled',true);
+    window.setTimeout(function () {
+      self.text(oldText).prop('disabled',false);
+    }, delay);
+  },
+  
+  Cookie: {  
+    setCookie: function (name, value, expires){
+      if (name){
+        if (expires){
+          document.cookie = name + "=" + value + "; expires=" + expires;
+        } else {
+          document.cookie = name + "=" + value;
+        }
+      }
+    }, 
+    
+    getCookie: function (name){
+      var i, pair, cookies, cookieString;
+      cookieString = document.cookie;
+      if (cookieString){
+        cookies = cookieString.split(";");
+        for (i = 0; i < cookies.length; i+= 1){
+          pair = cookies[i].split("=");
+          if (pair[0].trim() === name){
+            return pair[1];
+          }
+        }
+      }
+      return null;
+    }
   }
 };
 

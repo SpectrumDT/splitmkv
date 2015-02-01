@@ -25,11 +25,9 @@
         <p>Split an MKV file into OGG files. Yay!</p>
       </div>
     </header>
-    
     <hr />
-        
     <main style="width:100%">
-      <section class="section howto">
+      <section class="section howto slidedown">
         <h4>
           This tool lets you:
         </h4>
@@ -55,70 +53,69 @@
         </ol>
         </article>
         <p>
-          <button id="button_extract" onclick="SplitMKV.extract(this);">Extract</button>
+          <button id="button_extract">Extract</button>
         </p>  
       </section>
-      
-        <section class="section settings">    
-          <h4>
-            Input
-          </h4>
-          <p title="Select source file type">Source file type:
-            <select>
-              <option title="Start from an MKV video file">MKV</option>
-              <option title="Start from a WAV file and a chapter XML file">WAV and XML</option>
-            </select>
-          </p>
-          <p title="Select XML file">Select XML file:
-            <input type="file" onchange="SplitMKV.xmlFile_onChange(this);"/>
-          </p>
-          <h4>
-            Metadata
-          </h4>
-          <table>
-            <tr>
-              <td><label for="input_artist">Artist</label></td>
-              <td><input type="text" id="input_artist" onchange="SplitMKV.tag_onChange(this);"></input></td>
-            </tr>
-            <tr>
-              <td><label for="input_album">Album</label></td>
-              <td><input type="text" id="input_album"></input></td>
-            </tr>
-            <tr>
-              <td><label for="input_year">Year</label></td>
-              <td><input type="text" id="input_year"></input></td>
-            </tr>
-          </table>   
-        </section>
-        <section class="section chapterlist">
-          <h4>
-            Chapters
-          </h4>
-          <table id="chapterTable">
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Length</th>
-            </tr>
-            <tr>
-              <td>01</td>
-              <td><input type="text" value="Oink"/></td>
-              <td>1:00</td>
-            </tr>
-            <tr>
-              <td>02</td>
-              <td><input type="text" value="Boink"/></td>
-              <td>2:30</td>
-            </tr>
-            <tr>
-              <td>03</td>
-              <td><input type="text" value="Yoink"/></td>
-              <td>1:45</td>
-            </tr>
-          </table>
-        </section>
+      <section class="section settings slidedown">
+        <h4>
+          Input
+        </h4>
+        <p title="Select source file type">Source file type:
+          <select>
+            <option title="Start from an MKV video file">MKV</option>
+            <option title="Start from a WAV file and a chapter XML file">WAV and XML</option>
+          </select>
+        </p>
+        <p title="Select XML file">Select XML file:
+          <input id="input_xmlfile" type="file"/>
+        </p>
+        <h4>
+          Metadata
+        </h4>
+        <table>
+          <tr>
+            <td><label for="input_artist">Artist</label></td>
+            <td><input type="text" id="input_artist"></input></td>
+          </tr>
+          <tr>
+            <td><label for="input_album">Album</label></td>
+            <td><input type="text" id="input_album"></input></td>
+          </tr>
+          <tr>
+            <td><label for="input_year">Year</label></td>
+            <td><input type="text" id="input_year"></input></td>
+          </tr>
+        </table>   
+      </section>
+      <section class="section chapterlist">
+        <h4>
+          Chapters
+        </h4>
+        <em><label id="chapterTable_pleaseSelect">Please select an XML file</label></em>
+        <table id="chapterTable" style="display:none">
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Length</th>
+          </tr>
+          <tr>
+            <td>01</td>
+            <td><input type="text" value="Oink"/></td>
+            <td>1:00</td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td><input type="text" value="Boink"/></td>
+            <td>2:30</td>
+          </tr>
+          <tr>
+            <td>03</td>
+            <td><input type="text" value="Yoink"/></td>
+            <td>1:45</td>
+          </tr>
+        </table>
+      </section>
     </main>
-    
     <footer>
       <hr />
       <address>
@@ -133,6 +130,7 @@
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="splitmkv.js"></script>
     <script>
+      /* Fire JavaScript on-load-handler. */
       $(document).ready(SplitMKV.onLoad);
     </script>
   </body>
