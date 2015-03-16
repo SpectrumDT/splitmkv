@@ -116,47 +116,41 @@ var SplitMKV = {
     this.xml = xml;
   
     this.show = function(){
-      this.populate();
-      $("#chapterTable_pleaseSelect").hide();
-      this.table.fadeIn(1000);
+      try{      
+        // Remove all existing rows except the header. 
+        this.table.find("tr:has(td)").remove();
+      
+        this.populate();
+        $("#chapterTable_label").hide();
+        this.table.fadeIn(1000);
+      } catch (e) {
+        $("#chapterTable_label").text(e);
+        $("#chapterTable_label").fadeIn(1000);
+        this.table.hide();
+      }
     };
     
     this.populate = function(){
-      //alert("Received file: \n"+this.xml); 
-      var i;
-      var numTracks;
-      
-      this.parse();
-      
-      numTracks = Math.floor(Math.random()*18)+2;
-      
-      // Remove all existing rows except the header. 
-      this.table.find("tr:has(td)").remove();
-      
-      // Add new rows. 
-      for (i = 0; i < numTracks; i++){
-        var item = new SplitMKV.track();
-        this.table.append('<tr><td></td><td><input type="text" value="'+item.name+'"/></td><td>'+item.length+'</td></tr>');
-        this.table.find("tr td:first-child").text(function(i,o){return SplitMKV.Temp.pad2(i+1)});
-      }
+      var chapters, chapter, table, rawChapters, parsedXml, 
+          i = 1,
+          chapters = [];
+      table = this.table;
+      parsedXml = this.parse();
+      parsedXml.find("ChapterAtom").each(function (){
+        chapter = new SplitMKV.Chapter(this);
+        table.append('<tr><td>'+ SplitMKV.Temp.pad2(i) +
+          '</td><td><input type="text" value="'+chapter.name+'"/></td><td>'+chapter.formattedLength+'</td></tr>');
+        i++;
+      });
     };
     
     this.parse = function(){
       try {
-        var parsedXml = $($.parseXML(this.xml));
-        console.log("Parsing");
-        var chapters = parsedXml.find("ChapterAtom");
-        console.log("Parsing complete: "+chapters);
-        chapters.each(function (){console.log("Chapter!")});
+        return $($.parseXML(this.xml));
       } catch (e) {
-        alert("Could not parse XML.\n"+e);
+        throw ("Bad XML file.");
       }
     }
-  },
-  
-  track: function(){
-    this.name = SplitMKV.Temp.makeText(10);
-    this.length = SplitMKV.Temp.makeLength();
   },
   
   Temp: {
@@ -182,6 +176,20 @@ var SplitMKV = {
       return SplitMKV.Temp.pad(n, 2, '0');
     }
   }
+};
+  
+SplitMKV.Chapter = function(xml){
+  var self = $(xml);
+  this.uid = self.find("ChapterUID").text();
+  this.start = moment(self.find("ChapterTimeStart").text(), "HH:mm:ss.SSS");
+  this.end = moment(self.find("ChapterTimeEnd").text(), "HH:mm:ss.SSS");
+  this.name = self.find("ChapterDisplay ChapterString").text();;  
+  this.length = this.end.diff(this.start);
+  this.formattedLength = moment(this.length).format("mm:ss.SSS");
+};
+
+SplitMKV.Chapter.prototype.toString = function(){
+  return this.uid + " (" + this.start + " - " + this.end + ") ["+this.length+"]";
 };
 
 //SplitMKV.onLoad();
