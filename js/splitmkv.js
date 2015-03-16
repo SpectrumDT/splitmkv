@@ -7,9 +7,11 @@ var SplitMKV = {
     $("li").on("mouseover", function () {this.style.fontStyle = 'italic';});
     $("li").on("mouseout", function () {this.style.fontStyle = 'normal';});
     $("input").on("change", SplitMKV.setInputCookie);
+    $("img").on("mouseover", function () {$(this).fadeTo("fast", 0.1)})
+            .on("mouseout", function () {$(this).fadeTo("fast", 5.0)});
     
     // Make sections slide in.
-    //$("section.slidedown").hide().slideDown("slow");
+    $("section.slidedown").hide().slideDown("slow");
     
     // Load texts from cookies.
     SplitMKV.getSavedTexts();
@@ -61,17 +63,14 @@ var SplitMKV = {
     var fr;
     try{
       fr = new FileReader();
-      fr.onload = function(){SplitMKV.showChapterTable(this.result);};
+      fr.onload = function(){
+        var helper = new SplitMKV.tableHelper(this.result);
+        helper.show();
+      };
       fr.readAsText(filePath);
     } catch(e) {
       alert("Could not read file '"+filePath+"'.\n"+e);
     }
-  },
-  
-  showChapterTable: function(xml){
-    //alert("Received file: \n"+xml); 
-    $("#chapterTable_pleaseSelect").hide();
-    $("#chapterTable").fadeIn(1000);
   },
   
   extract: function (selfDom){
@@ -108,6 +107,79 @@ var SplitMKV = {
         }
       }
       return null;
+    }
+  }, 
+  
+  tableHelper: function (xml){
+    
+    this.table = $("#chapterTable");
+    this.xml = xml;
+  
+    this.show = function(){
+      this.populate();
+      $("#chapterTable_pleaseSelect").hide();
+      this.table.fadeIn(1000);
+    };
+    
+    this.populate = function(){
+      //alert("Received file: \n"+this.xml); 
+      var i;
+      var numTracks;
+      
+      this.parse();
+      
+      numTracks = Math.floor(Math.random()*18)+2;
+      
+      // Remove all existing rows except the header. 
+      this.table.find("tr:has(td)").remove();
+      
+      // Add new rows. 
+      for (i = 0; i < numTracks; i++){
+        var item = new SplitMKV.track();
+        this.table.append('<tr><td></td><td><input type="text" value="'+item.name+'"/></td><td>'+item.length+'</td></tr>');
+        this.table.find("tr td:first-child").text(function(i,o){return SplitMKV.Temp.pad2(i+1)});
+      }
+    };
+    
+    this.parse = function(){
+      try {
+        var parsedXml = $($.parseXML(this.xml));
+        console.log("Parsing");
+        var chapters = parsedXml.find("ChapterAtom");
+        console.log("Parsing complete: "+chapters);
+        chapters.each(function (){console.log("Chapter!")});
+      } catch (e) {
+        alert("Could not parse XML.\n"+e);
+      }
+    }
+  },
+  
+  track: function(){
+    this.name = SplitMKV.Temp.makeText(10);
+    this.length = SplitMKV.Temp.makeLength();
+  },
+  
+  Temp: {
+    makeText: function (len)
+    {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for( var i=0; i < len; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return text;
+    },
+    makeLength: function(){
+      return (Math.random()*10).toFixed(0) + ":" + SplitMKV.Temp.pad2((Math.random()*60).toFixed(0));
+    },    
+    pad: function (n, width, z){
+      z = z || '0';
+      n = n + '';
+      return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    },
+    pad2: function (n){
+      return SplitMKV.Temp.pad(n, 2, '0');
     }
   }
 };
