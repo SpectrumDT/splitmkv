@@ -26,7 +26,7 @@
       </div>
     </header>
     <hr />
-    <main style="width:100%">
+    <main style="width:100%" data-ng-app="SplitMKV" data-ng-controller="table">
       <section class="section howto slidedown">
         <h4>
           This tool lets you:
@@ -75,15 +75,15 @@
         <table>
           <tr>
             <td><label for="input_artist">Artist</label></td>
-            <td><input type="text" id="input_artist"></input></td>
+            <td><input class="savetext" type="text" id="input_artist"></input></td>
           </tr>
           <tr>
             <td><label for="input_album">Album</label></td>
-            <td><input type="text" id="input_album"></input></td>
+            <td><input class="savetext" type="text" id="input_album"></input></td>
           </tr>
           <tr>
             <td><label for="input_year">Year</label></td>
-            <td><input type="text" id="input_year"></input></td>
+            <td><input class="savetext" type="text" id="input_year"></input></td>
           </tr>
         </table>   
       </section>
@@ -92,11 +92,16 @@
           Chapters
         </h4>
         <em><label id="chapterTable_label">Please select an XML file</label></em>
-        <table id="chapterTable" style="display:none">
+        <table id="chapterTable" style="display:inline">
           <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Length</th>
+            <th data-ng-bind="headNumber"></th>
+            <th data-ng-bind="headTitle"></th>
+            <th data-ng-bind="headLength"></th>
+          </tr>
+          <tr data-ng-repeat="c in chapters">
+            <td data-ng-bind="c.number"></td>
+            <td><input type="text" id="{{'title_' + c.uid}}" data-ng-model="c.name"/></td>
+            <td data-ng-bind="c.formattedLength"></td>
           </tr>
         </table>
       </section>
@@ -114,6 +119,7 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
     <script type="text/javascript" src="splitmkv.js"></script>
     <script>
       /* Fire JavaScript on-load-handler when document is ready. */

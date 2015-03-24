@@ -6,7 +6,7 @@ var SplitMKV = {
     $("#input_xmlfile").on("change", function(){SplitMKV.getChaptersFromXml();});
     $("li").on("mouseover", function () {this.style.fontStyle = 'italic';});
     $("li").on("mouseout", function () {this.style.fontStyle = 'normal';});
-    $("input").on("change", SplitMKV.setInputCookie);
+    $("input").on("change", SplitMKV.saveInputValue);
     $("img").on("mouseover", function () {$(this).fadeTo("fast", 0.1)})
             .on("mouseout", function () {$(this).fadeTo("fast", 5.0)});
     
@@ -20,24 +20,22 @@ var SplitMKV = {
     SplitMKV.getChaptersFromXml();
   },
   
-  setInputCookie: function(input){    
+  saveInputValue: function(input){    
     if (this.id){
-      SplitMKV.Cookie.setCookie(this.id, this.value);
+      SplitMKV.State.set(this.id, this.value);
     }
   },
   
   getSavedTexts: function () {    
-    var inputs, input, i, cookieValue;
-    if (document.cookie){
-      $("input[type='text']").each(function(){
-        if (this.id){
-          cookieValue = SplitMKV.Cookie.getCookie(this.id);
-          if (cookieValue){
-            $(this).val(cookieValue);
-          }
+    var inputs, input, i, savedValue;
+    $("input[type='text'].savetext").each(function(){
+      if (this.id){
+        savedValue = SplitMKV.State.get(this.id);
+        if (savedValue){
+          $(this).val(savedValue);
         }
-      });
-    }
+      }
+    });
   },
   
   getChaptersFromXml: function (){
@@ -83,43 +81,30 @@ var SplitMKV = {
     }, delay);
   },
   
-  Cookie: {  
-    setCookie: function (name, value, expires){
-      if (name){
-        if (expires){
-          document.cookie = name + "=" + value + "; expires=" + expires;
-        } else {
-          document.cookie = name + "=" + value;
+  State: {  
+    set: function (name, value, expires){
+      if (typeof(Storage) != "undefined"){
+        if (name){
+          localStorage.setItem(name,value);
         }
       }
     }, 
     
-    getCookie: function (name){
-      var i, pair, cookies, cookieString;
-      cookieString = document.cookie;
-      if (cookieString){
-        cookies = cookieString.split(";");
-        for (i = 0; i < cookies.length; i+= 1){
-          pair = cookies[i].split("=");
-          if (pair[0].trim() === name){
-            return pair[1];
-          }
-        }
+    get: function (name){
+      if (typeof(Storage) != "undefined"){
+        return localStorage[name];
       }
       return null;
     }
   }, 
   
   tableHelper: function (xml){
-    
+    self = this;
     this.table = $("#chapterTable");
     this.xml = xml;
   
     this.show = function(){
       try{      
-        // Remove all existing rows except the header. 
-        this.table.find("tr:has(td)").remove();
-      
         this.populate();
         $("#chapterTable_label").hide();
         this.table.fadeIn(1000);
@@ -130,27 +115,27 @@ var SplitMKV = {
       }
     };
     
-    this.populate = function(){
-      var chapters, chapter, table, rawChapters, parsedXml, 
-          i = 1,
-          chapters = [];
-      table = this.table;
-      parsedXml = this.parse();
-      parsedXml.find("ChapterAtom").each(function (){
-        chapter = new SplitMKV.Chapter(this);
-        table.append('<tr><td>'+ SplitMKV.Temp.pad2(i) +
-          '</td><td><input type="text" value="'+chapter.name+'"/></td><td>'+chapter.formattedLength+'</td></tr>');
-        i++;
-      });
-    };
-    
     this.parse = function(){
       try {
         return $($.parseXML(this.xml));
       } catch (e) {
         throw ("Bad XML file.");
       }
-    }
+    };
+    
+    this.populate = function(){
+      var chapter, parsedXml, 
+          i = 1;
+      
+      parsedXml = self.parse();
+      self.chapters = [];
+      parsedXml.find("ChapterAtom").each(function (){
+        self.chapters.push(new SplitMKV.Chapter(this, i));
+        i++;
+      });
+      
+      angular.element($("#input_xmlfile")).scope().updateChapters(self.chapters);
+    };
   },
   
   Temp: {
@@ -178,7 +163,7 @@ var SplitMKV = {
   }
 };
   
-SplitMKV.Chapter = function(xml){
+SplitMKV.Chapter = function(xml, i){
   var self = $(xml);
   this.uid = self.find("ChapterUID").text();
   this.start = moment(self.find("ChapterTimeStart").text(), "HH:mm:ss.SSS");
@@ -186,10 +171,24 @@ SplitMKV.Chapter = function(xml){
   this.name = self.find("ChapterDisplay ChapterString").text();;  
   this.length = this.end.diff(this.start);
   this.formattedLength = moment(this.length).format("mm:ss.SSS");
+  this.number = SplitMKV.Temp.pad2(i);
 };
 
 SplitMKV.Chapter.prototype.toString = function(){
   return this.uid + " (" + this.start + " - " + this.end + ") ["+this.length+"]";
 };
+
+SplitMKV.app = angular.module('SplitMKV', []);
+SplitMKV.app.controller('table', function($scope){
+  $scope.headNumber = "#";
+  $scope.headTitle = "Title";
+  $scope.headLength = "Length";
+  $scope.chapters = [{formattedLength: "2:34"}, {formattedLength: "0:46"}];
+  $scope.updateChapters = function(chapters){
+    $scope.$apply(function(){
+      $scope.chapters = chapters;
+    });
+  };
+});
 
 //SplitMKV.onLoad();
